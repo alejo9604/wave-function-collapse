@@ -60,10 +60,10 @@ namespace AllieJoe.SudokuSolver
                 {
                     //Add Horizontal line
                     temp = GetCell(i, y);
-                    temp.UpdateDomain(collapsedValue);
+                    temp.TryUpdateDomain(collapsedValue);
                     //Add Vertical Line
                     temp = GetCell(x, i);
-                    temp.UpdateDomain(collapsedValue);
+                    temp.TryUpdateDomain(collapsedValue);
                 }
 
                 int initQuadrantX = Mathf.FloorToInt(x / (float) QuadrantSize) * QuadrantSize;
@@ -73,7 +73,7 @@ namespace AllieJoe.SudokuSolver
                     for (int j = initQuadrantY; j < initQuadrantY + QuadrantSize; j++)
                     {
                         temp = GetCell(i, j);
-                        temp.UpdateDomain(collapsedValue);
+                        temp.TryUpdateDomain(collapsedValue);
                     }
                 }
             }
@@ -111,57 +111,18 @@ namespace AllieJoe.SudokuSolver
                 return (-1, -1);
         }
 
-        public bool CollapseAndPropagate(int x, int y)
+        public BoardStateData GetBoardState()
         {
-            Queue<BoardCell> pendingCollapsedCells = new Queue<BoardCell>();
-            pendingCollapsedCells.Enqueue(GetCell(x, y));
+            BoardStateData boardStateData = new BoardStateData(_cells.Count);
 
-            bool successCollapse = true;
-            while (pendingCollapsedCells.Count > 0)
+            for (int i = 0; i < _cells.Count; i++)
             {
-                BoardCell collapseCell = pendingCollapsedCells.Dequeue();
-                if (!collapseCell.TryCollapse())
-                {
-                    successCollapse = false;
-                    continue;
-                }
-
-                remainCellsToCollapse--;
-                
-                int collapsedValue = collapseCell.Value;
-                int collapseX = collapseCell.X;
-                int collapseY = collapseCell.Y;
-                for (int i = 0; i < Size; i++)
-                {
-                    //Add Horizontal line
-                    TryUpdateCell(i, collapseY, collapsedValue, pendingCollapsedCells);
-                    //Add Vertical Line
-                    TryUpdateCell(collapseX, i, collapsedValue, pendingCollapsedCells);
-                }
+                boardStateData.Cells[i] = new BoardCellStateData(_cells[i]);
+            }
             
-                int initQuadrantX = Mathf.FloorToInt(collapseX / (float) QuadrantSize) * QuadrantSize;
-                int initQuadrantY = Mathf.FloorToInt(collapseY / (float) QuadrantSize) * QuadrantSize;
-                for (int i = initQuadrantX; i < initQuadrantX + QuadrantSize; i++)
-                {
-                    for (int j = initQuadrantY; j < initQuadrantY + QuadrantSize; j++)
-                    {
-                        TryUpdateCell(i, j, collapsedValue, pendingCollapsedCells);
-                    }
-                }
-            }
-
-            return successCollapse;
+            return boardStateData;
         }
-
-        private void TryUpdateCell(int x, int y, int collapsedValue, Queue<BoardCell> pendingCollapsedCells = null)
-        {
-            BoardCell temp = GetCell(x, y);
-            if (temp.UpdateDomain(collapsedValue) && temp.Entropy <= 1)
-            {
-                pendingCollapsedCells?.Enqueue(temp);
-            }
-        }
-
+        
         public override string ToString()
         {
             string text = "";

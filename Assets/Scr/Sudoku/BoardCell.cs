@@ -8,6 +8,7 @@ namespace AllieJoe.SudokuSolver
         public int Value { get; private set; }
         public int Entropy => Collapsed ? int.MaxValue : Domain.Count;
         public bool Collapsed { get; private set; }
+        public bool CanCollapse => !Collapsed && Domain.Count <= 1;
         
         public int X { get; private set; }
         public int Y { get; private set; }
@@ -52,7 +53,7 @@ namespace AllieJoe.SudokuSolver
             return true;
         }
 
-        public bool UpdateDomain(int value)
+        public bool TryUpdateDomain(int value)
         {
             if (Collapsed)
                 return false;

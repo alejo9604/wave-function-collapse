@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using AllieJoe.SudokuSolver.View;
 using UnityEngine;
@@ -56,7 +57,7 @@ namespace AllieJoe.SudokuSolver
             _renderer.CreateBoard(_board);
         }
 
-        private void Tick()
+        private  void Tick()
         {
             if(_board.Solved)
                 return;
@@ -69,7 +70,7 @@ namespace AllieJoe.SudokuSolver
                 return;
             }
 
-            bool success = _board.CollapseAndPropagate(cellToCollapse.x, cellToCollapse.y);
+            bool success = CollapseAndPropagate(cellToCollapse.x, cellToCollapse.y);
             _renderer.UpdateBoard(_board);
             _renderer.HighlightCollapsedPiece(cellToCollapse.x, cellToCollapse.y);
             
@@ -79,6 +80,66 @@ namespace AllieJoe.SudokuSolver
                 Debug.Log("Can't find a solution. Try again!!!"); 
         }
 
+        private bool CollapseAndPropagate(int x, int y)
+        {
+            bool successCollapse = true;
+            //BoardStateData boardState = _board.GetBoardState();
+            Queue<BoardCell> pendingCollapsedCells = new Queue<BoardCell>();
+            
+            BoardCell cellToCollapse = _board.GetCell(x, y);
+            if (!cellToCollapse.TryCollapse())
+            {
+                successCollapse = false;
+                Debug.LogError($"Can't collapse {cellToCollapse.Pos}");
+            }
+            
+            //boardState.SetCellCollapsed(cellToCollapse);
+            
+            int collapsedValue = cellToCollapse.Value;
+            int collapseX = cellToCollapse.X;
+            int collapseY = cellToCollapse.Y;
+            for (int i = 0; i < _board.Size; i++)
+            {
+                //Add Horizontal line
+                if (!TryUpdateCell(i, collapseY, collapsedValue, pendingCollapsedCells))
+                {
+                    Debug.LogError($"Can't update domain on {i}, {collapseY}");
+                }
+                //Add Vertical Line
+                if(!TryUpdateCell(collapseX, i, collapsedValue, pendingCollapsedCells))
+                {
+                    Debug.LogError($"Can't update domain on {collapseX}, {i}");
+                }
+            }
+
+            int quadrantSize = _board.QuadrantSize;
+            int initQuadrantX = Mathf.FloorToInt(collapseX / (float) quadrantSize) * quadrantSize;
+            int initQuadrantY = Mathf.FloorToInt(collapseY / (float) quadrantSize) * quadrantSize;
+            for (int i = initQuadrantX; i < initQuadrantX + quadrantSize; i++)
+            {
+                for (int j = initQuadrantY; j < initQuadrantY + quadrantSize; j++)
+                {
+                    if (!TryUpdateCell(i, j, collapsedValue, pendingCollapsedCells))
+                    {
+                        Debug.LogError($"Can't update domain on {i}, {j}");
+                    }
+                }
+            }
+
+            return successCollapse;
+        }
+        
+        private bool TryUpdateCell(int x, int y, int collapsedValue, Queue<BoardCell> pendingCollapsedCells = null)
+        {
+            BoardCell temp = _board.GetCell(x, y);
+            if (temp.TryUpdateDomain(collapsedValue) && temp.CanCollapse)
+            {
+                pendingCollapsedCells?.Enqueue(temp);
+            }
+            
+            return temp.Entropy > 0;
+        }
+        
         private void Update()
         {
             if(Input.GetKeyDown(KeyCode.Space) && _board != null)
@@ -90,4 +151,5 @@ namespace AllieJoe.SudokuSolver
         }
         
     }
+
 }
