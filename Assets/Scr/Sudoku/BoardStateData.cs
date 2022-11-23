@@ -2,22 +2,15 @@
 {
     public class BoardStateData
     {
-        public BoardCellStateData[] Cells;
-        public BoardCellToCollapse CellCollapsed;
+        public BoardCellData[] Cells;
 
         public BoardStateData(int cellAmount)
         {
-            Cells = new BoardCellStateData[cellAmount];
+            Cells = new BoardCellData[cellAmount];
         }
-
-        public void SetCellCollapsed(BoardCell cell)
-        {
-            CellCollapsed = new BoardCellToCollapse(cell.X, cell.Y, cell.Value);
-        }
-        
     }
 
-    public class BoardCellStateData
+    public class BoardCellData
     {
         public int X;
         public int Y;
@@ -25,7 +18,7 @@
         public int Value;
         public bool Collapsed;
 
-        public BoardCellStateData(BoardCell cell)
+        public BoardCellData(BoardCell cell)
         {
             X = cell.X;
             Y = cell.Y;
@@ -35,17 +28,18 @@
         }
     }
 
-    public class BoardCellToCollapse
+    public class BoardCellCollapseData
     {
         public int X;
         public int Y;
         public int ValueCollapsed;
+        public int[] Domain;
 
-        public BoardCellToCollapse(int x, int y, int value)
+        public BoardCellCollapseData(BoardCell cell)
         {
-            X = x;
-            Y = y;
-            ValueCollapsed = value;
+            X = cell.X;
+            Y = cell.Y;
+            Domain = cell.Domain.ToArray();
         }
     }
     

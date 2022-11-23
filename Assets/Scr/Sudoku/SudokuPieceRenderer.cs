@@ -39,7 +39,12 @@ namespace AllieJoe.SudokuSolver.View
                     _domainTexts[i].text = domainValue.ToString();
                 else
                     _domainTexts[i].text = "";
-                
+            }
+
+            if (value <= 0 && domain.Count == 0)
+            {
+                _collapsedText.text = "X";
+                Highlight();
             }
         }
 

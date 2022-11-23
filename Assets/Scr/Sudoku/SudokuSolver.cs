@@ -14,7 +14,8 @@ namespace AllieJoe.SudokuSolver
         [SerializeField] private SudokuType _type = SudokuType._4x4;
         [SerializeField] private SudokuRenderer _renderer;
         
-        private Board _board; 
+        private Board _board;
+        private Stack<SudokuSolverStep> _steps = new Stack<SudokuSolverStep>(); 
 
         private static int[,] MockBoard_9x9()
         {
@@ -55,6 +56,7 @@ namespace AllieJoe.SudokuSolver
             else if(_type == SudokuType._9x9)
                 _board = new Board(MockBoard_9x9());
             _renderer.CreateBoard(_board);
+            _steps.Clear();
         }
 
         private  void Tick()
@@ -70,7 +72,7 @@ namespace AllieJoe.SudokuSolver
                 return;
             }
 
-            bool success = CollapseAndPropagate(cellToCollapse.x, cellToCollapse.y);
+            bool success = Step(cellToCollapse.x, cellToCollapse.y);
             _renderer.UpdateBoard(_board);
             _renderer.HighlightCollapsedPiece(cellToCollapse.x, cellToCollapse.y);
             
@@ -80,6 +82,43 @@ namespace AllieJoe.SudokuSolver
                 Debug.Log("Can't find a solution. Try again!!!"); 
         }
 
+
+        private bool Step(int x, int y)
+        {
+            SudokuSolverStep step = new SudokuSolverStep(_board, x, y);
+            step.Execute();
+            if (step.Status == SudokuSolverStepStatus.Completed)
+            {
+                _steps.Push(step);
+                return true;
+            }
+            
+            //Backtrack until a good state
+            SudokuSolverStepStatus currentStatus = SudokuSolverStepStatus.Abort;
+            while (currentStatus == SudokuSolverStepStatus.Abort)
+            {
+                if (_steps.Count == 0)
+                {
+                    return false;
+                }
+
+                Debug.LogError("Backtracking...");
+                SudokuSolverStep backtrackStep = _steps.Pop();
+                backtrackStep.UndoStep();
+                backtrackStep.Execute();
+                currentStatus = backtrackStep.Status;
+                if (currentStatus == SudokuSolverStepStatus.Completed)
+                {
+                    _steps.Push(backtrackStep);
+                    break;
+                }
+            }
+            
+            return true;
+        }
+
+
+        #region CollapseAndPropagate
         private bool CollapseAndPropagate(int x, int y)
         {
             bool successCollapse = true;
@@ -139,6 +178,8 @@ namespace AllieJoe.SudokuSolver
             
             return temp.Entropy > 0;
         }
+        
+        #endregion
         
         private void Update()
         {

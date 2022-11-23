@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace AllieJoe.SudokuSolver
@@ -41,7 +42,7 @@ namespace AllieJoe.SudokuSolver
             }
         }
 
-        public bool TryCollapse()
+        public bool TryCollapse(bool random = true)
         {
             if (Domain.Count <= 0)
             {
@@ -49,7 +50,8 @@ namespace AllieJoe.SudokuSolver
                 return false;
             }
 
-            Collapse(Domain[Random.Range(0, Domain.Count)]);
+            int valueToCollapse = random ? Domain[Random.Range(0, Domain.Count)] : Domain[0];
+            Collapse(valueToCollapse);
             return true;
         }
 
@@ -58,6 +60,15 @@ namespace AllieJoe.SudokuSolver
             if (Collapsed)
                 return false;
             return Domain.Remove(value);
+        }
+
+        public void Bind(BoardCellData data)
+        {
+            X = data.X;
+            Y = data.Y;
+            Value = data.Value;
+            Collapsed = data.Collapsed;
+            Domain = data.Domain.ToList();
         }
         
 

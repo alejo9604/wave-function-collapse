@@ -106,9 +106,16 @@ namespace AllieJoe.SudokuSolver
             }
 
             if (minEntries.Count > 0)
-                return minEntries[Random.Range(0, minEntries.Count)].Pos;
-            else
-                return (-1, -1);
+            {
+                int index = Random.Range(0, minEntries.Count);
+                if (SudokuHelper.Instance.useOrder && SudokuHelper.Instance.HasNextCell())
+                    index = SudokuHelper.Instance.NextCell();
+                else
+                    SudokuHelper.Instance.RegisterCell(index);
+                return minEntries[index].Pos;
+            }
+
+            return (-1, -1);
         }
 
         public BoardStateData GetBoardState()
@@ -117,10 +124,19 @@ namespace AllieJoe.SudokuSolver
 
             for (int i = 0; i < _cells.Count; i++)
             {
-                boardStateData.Cells[i] = new BoardCellStateData(_cells[i]);
+                boardStateData.Cells[i] = new BoardCellData(_cells[i]);
             }
             
             return boardStateData;
+        }
+
+        public void Bind(BoardStateData stateData)
+        {
+            foreach (BoardCellData cellData in stateData.Cells)
+            {
+                BoardCell cell = GetCell(cellData.X, cellData.Y);
+                cell.Bind(cellData);
+            }
         }
         
         public override string ToString()
