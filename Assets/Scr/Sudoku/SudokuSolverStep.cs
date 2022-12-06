@@ -4,10 +4,12 @@ using Mathf = UnityEngine.Mathf;
 
 namespace AllieJoe.SudokuSolver
 {
-    public enum SudokuSolverStepStatus {None, Completed, Fail, Abort}
+    public enum SudokuSolverStepStatus {None, Completed, Error}
     
     public class SudokuSolverStep
     {
+        private enum StepResult {Pending, Success, Failed, Error};
+        
         private const int TOTAL_ATTEMPTS = 9;
         
         private Board _board;
@@ -20,7 +22,20 @@ namespace AllieJoe.SudokuSolver
         private BoardCellCollapseData _cellCollapsedData;
         private BoardCell _cellToCollapse;
         
-        public SudokuSolverStepStatus Status { get; private set; }
+        private StepResult _stepResult = StepResult.Pending;
+
+        public SudokuSolverStepStatus Status
+        {
+            get
+            {
+                if (_stepResult == StepResult.Error || _stepResult == StepResult.Failed)
+                    return SudokuSolverStepStatus.Error;
+                else if (_stepResult == StepResult.Success)
+                    return SudokuSolverStepStatus.Completed;
+
+                return SudokuSolverStepStatus.None;
+            }
+        }
 
         public SudokuSolverStep(Board board, int x, int y)
         {
@@ -31,39 +46,32 @@ namespace AllieJoe.SudokuSolver
         public void Execute()
         {
             int attempts = 0;
-            Status = SudokuSolverStepStatus.None;
+            _stepResult = StepResult.Pending;
             
             while (attempts < TOTAL_ATTEMPTS)
             {
                 attempts++;
-                if (Status == SudokuSolverStepStatus.Fail)
-                {
-                    UndoAndRemoveCollapseValue();
-                }
                 
+                //Undo if previous attempt failed
+                if (_stepResult == StepResult.Failed)
+                    UndoAndRemoveCollapseValue();
+
                 TryCollapseAndPropagate();
 
-                if (Status == SudokuSolverStepStatus.Completed ||
-                    Status == SudokuSolverStepStatus.Abort)
-                {
+                //End if Success or Error
+                if (_stepResult == StepResult.Success ||  _stepResult == StepResult.Error)
                     break;
-                }
             }
 
-            if (Status == SudokuSolverStepStatus.Fail)
-            {
-                Status = SudokuSolverStepStatus.Abort;
-            }
-
-            if (Status == SudokuSolverStepStatus.Completed)
-            {
-                Debug.LogError($"Collapsing {_cellCollapsedData.X},{_cellCollapsedData.Y} to {_cellCollapsedData.ValueCollapsed}");
-            }
+            if (_stepResult == StepResult.Success)
+                Debug.Log($"Collapsing {_cellCollapsedData.X},{_cellCollapsedData.Y} to {_cellCollapsedData.ValueCollapsed}");
+            else
+                _stepResult = StepResult.Error;
         }
         
         public bool UndoStep()
         {
-            Debug.LogError($"Undo step: board and removing {_cellCollapsedData.ValueCollapsed} from ({_cellCollapsedData.X},{_cellCollapsedData.Y}).");
+            Debug.Log($"Undo step: board and removing {_cellCollapsedData.ValueCollapsed} from ({_cellCollapsedData.X},{_cellCollapsedData.Y}).");
             
             //Undo collapse
             BoardCellData cellDataCollapse = _boardState.Cells[_cellCollapsedData.X * _board.Size + _cellCollapsedData.Y];
@@ -77,21 +85,20 @@ namespace AllieJoe.SudokuSolver
 
         private void TryCollapseAndPropagate()
         {
+            //Save board state
             _boardState = _board.GetBoardState();
-            
             _cellToCollapse = _board.GetCell(_cellPos.x, _cellPos.y);
-            
             _cellCollapsedData = new BoardCellCollapseData(_cellToCollapse);
 
             if (_cellToCollapse.Entropy == 0)
             {
-                Status = SudokuSolverStepStatus.Abort;
-                Debug.LogError($"Cell {_cellPos} without domain!");
+                _stepResult = StepResult.Error;
+                Debug.LogWarning($"Cell {_cellPos} without domain!");
                 return;
             }
 
             bool success = CollapseAndPropagate();
-            Status = success ? SudokuSolverStepStatus.Completed : SudokuSolverStepStatus.Fail;
+            _stepResult = success ? StepResult.Success : StepResult.Failed;
         }
 
         private bool CollapseAndPropagate()
@@ -99,8 +106,9 @@ namespace AllieJoe.SudokuSolver
             bool successCollapse = true;
             if (!_cellToCollapse.TryCollapse(useRandomCollapseValue))
             {
+                Debug.LogError($"Can't collapse {_cellToCollapse.Pos}. Aborting!");
                 successCollapse = false;
-                Debug.LogError($"Can't collapse {_cellToCollapse.Pos}");
+                return successCollapse;
             }
 
             _cellCollapsedData.ValueCollapsed = _cellToCollapse.Value;
@@ -113,13 +121,13 @@ namespace AllieJoe.SudokuSolver
                 //Add Horizontal line
                 if (!TryUpdateCell(i, collapseY, collapsedValue, pendingCollapsedCells))
                 {
-                    Debug.LogError($"Can't update domain on {i}, {collapseY}");
+                    Debug.LogWarning($"Can't update domain on {i}, {collapseY}");
                     return false;
                 }
                 //Add Vertical Line
                 if(!TryUpdateCell(collapseX, i, collapsedValue, pendingCollapsedCells))
                 {
-                    Debug.LogError($"Can't update domain on {collapseX}, {i}");
+                    Debug.LogWarning($"Can't update domain on {collapseX}, {i}");
                     return false;
                 }
             }
@@ -133,7 +141,7 @@ namespace AllieJoe.SudokuSolver
                 {
                     if (!TryUpdateCell(i, j, collapsedValue, pendingCollapsedCells))
                     {
-                        Debug.LogError($"Can't update domain on {i}, {j}");
+                        Debug.LogWarning($"Can't update domain on {i}, {j}");
                         return false;
                     }
                 }
@@ -155,7 +163,7 @@ namespace AllieJoe.SudokuSolver
 
         private bool UndoAndRemoveCollapseValue()
         {
-            Debug.LogError($"Restoring board and removing {_cellCollapsedData.ValueCollapsed} from ({_cellCollapsedData.X},{_cellCollapsedData.Y}).");
+            Debug.Log($"Restoring board and removing {_cellCollapsedData.ValueCollapsed} from ({_cellCollapsedData.X},{_cellCollapsedData.Y}).");
             RestoreBoard();
             return _cellToCollapse.TryUpdateDomain(_cellCollapsedData.ValueCollapsed);
         }

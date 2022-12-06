@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using AllieJoe.SudokuSolver.Helper;
 using UnityEngine;
 
 namespace AllieJoe.SudokuSolver
@@ -7,10 +8,21 @@ namespace AllieJoe.SudokuSolver
     {
         public int Size { get; private set; }
         public int QuadrantSize { get; private set; }
-        public bool Solved => remainCellsToCollapse == 0;
+        public bool Solved
+        {
+            get
+            {
+                foreach (var c in _cells)
+                {
+                    if (!c.Collapsed)
+                        return false;
+                }
+
+                return true;
+            }
+        }
 
         private List<BoardCell> _cells;
-        private int remainCellsToCollapse;
 
         public BoardCell GetCell(int x, int y)
         {
@@ -40,14 +52,12 @@ namespace AllieJoe.SudokuSolver
 
         private void SetInitialState()
         {
-            remainCellsToCollapse = _cells.Count;
             List<BoardCell> collapsedCells = new List<BoardCell>();
             foreach (var c in _cells)
             {
                 if (c.Collapsed)
                 {
                     collapsedCells.Add(c);
-                    remainCellsToCollapse--;
                 }
             }
 
@@ -108,10 +118,6 @@ namespace AllieJoe.SudokuSolver
             if (minEntries.Count > 0)
             {
                 int index = Random.Range(0, minEntries.Count);
-                if (SudokuHelper.Instance.useOrder && SudokuHelper.Instance.HasNextCell())
-                    index = SudokuHelper.Instance.NextCell();
-                else
-                    SudokuHelper.Instance.RegisterCell(index);
                 return minEntries[index].Pos;
             }
 
