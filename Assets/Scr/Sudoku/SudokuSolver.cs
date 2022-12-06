@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using AllieJoe.SudokuSolver.View;
 using AllieJoe.SudokuSolver.Helper;
@@ -14,9 +15,15 @@ namespace AllieJoe.SudokuSolver
         
         [Range(1, 50)]
         public int K = 20;
+
+        [Space(20)]
+        public bool auto = true;
+        [Range(0.1f, 2f)]
+        public float timeAnim = 1;
         
         private Board _board;
         private Stack<SudokuSolverStep> _steps = new Stack<SudokuSolverStep>();
+        private bool _isRunning = false;
 
         private void Start()
         {
@@ -37,25 +44,38 @@ namespace AllieJoe.SudokuSolver
 
         private  void Tick()
         {
-            if(_board.Solved)
-                return;
-            
-            (int x, int y) cellToCollapse = _board.FindMintEntropyCell();
-            if (cellToCollapse.x < 0)
+            if (_board.Solved)
             {
-                Debug.Log("Can't find a solution. Try again!!!"); 
-                _renderer.UpdateBoard(_board);
+                _isRunning = false;
                 return;
             }
 
-            bool success = Step(cellToCollapse.x, cellToCollapse.y);
-            _renderer.UpdateBoard(_board);
-            _renderer.HighlightCollapsedPiece(cellToCollapse.x, cellToCollapse.y);
-            
-            if(_board.Solved)
+            bool success = false;
+            (int x, int y) cellToCollapse = _board.FindMintEntropyCell();
+            if (cellToCollapse.x < 0)
+            {
+                //Potential error - No solution available?
+                _renderer.UpdateBoard(_board);
+            }
+            else
+            {
+                success = Step(cellToCollapse.x, cellToCollapse.y);
+                _renderer.UpdateBoard(_board);
+                _renderer.HighlightCollapsedPiece(cellToCollapse.x, cellToCollapse.y);
+            }
+
+            if (_board.Solved)
+            {
+                _isRunning = false;
+                _renderer.HighlightCompleted();
                 Debug.Log("Solved!!!");
-            else if(!success && _board.HasInvalidTiles())
-                Debug.LogError("Can't find a solution. Try again!!!"); 
+            }
+            else if (!success && _board.HasInvalidTiles())
+            {
+                _isRunning = false;
+                _renderer.HighlightNoSolution();
+                Debug.LogError("Can't find a solution. Try again!!!");
+            }
         }
 
 
@@ -98,14 +118,35 @@ namespace AllieJoe.SudokuSolver
 
         private void Update()
         {
-            if(Input.GetKeyDown(KeyCode.Space) && _board != null)
-                Tick();
-
             if (Input.GetKeyDown(KeyCode.R))
+            {
+                _isRunning = false;
+                StopAllCoroutines();
                 SetBoard();
+            }
 
+            if(_isRunning)
+                return;
+
+            if (Input.GetKeyDown(KeyCode.Space) && _board != null)
+            {
+                if (auto)
+                    StartCoroutine(TickEnumerator());
+                else
+                    Tick();
+            }
         }
-        
+
+        private IEnumerator TickEnumerator()
+        {
+            _isRunning = true;
+            while (_isRunning)
+            {
+                yield return new WaitForSeconds(timeAnim);
+                Tick();
+            }
+            _isRunning = false;
+        }
     }
 
 }

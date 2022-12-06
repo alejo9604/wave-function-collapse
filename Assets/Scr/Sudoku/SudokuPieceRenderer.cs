@@ -50,6 +50,16 @@ namespace AllieJoe.SudokuSolver.View
 
         public void Highlight()
         {
+            _collapsedText.color = Color.yellow;
+        }
+
+        public void HighlightCompleted()
+        {
+            _collapsedText.color = Color.green;
+        }
+        
+        public void HighlightNoSolution()
+        {
             _collapsedText.color = Color.red;
         }
     }

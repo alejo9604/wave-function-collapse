@@ -53,6 +53,22 @@ namespace AllieJoe.SudokuSolver.View
             _pieceRenderers[x * _size + y].Highlight();
         }
 
+        public void HighlightCompleted()
+        {
+            foreach (SudokuPieceRenderer sudokuPieceRenderer in _pieceRenderers)
+            {
+                sudokuPieceRenderer.HighlightCompleted();
+            }
+        }
+        
+        public void HighlightNoSolution()
+        {
+            foreach (SudokuPieceRenderer sudokuPieceRenderer in _pieceRenderers)
+            {
+                sudokuPieceRenderer.HighlightNoSolution();
+            }
+        }
+
         private void Clear()
         {
             _pieceRenderers.Clear();
