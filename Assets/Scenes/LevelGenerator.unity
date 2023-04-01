@@ -287,5 +287,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _tileData: {fileID: 11400000, guid: d04f6fc1f1bfd7141a9d4e5dc46f68f7, type: 2}
-  Size: 4
+  Size: 6
   _render: {fileID: 2076305774}
+  _speed: 0.5

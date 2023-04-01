@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Sirenix.OdinInspector;
@@ -18,15 +19,24 @@ namespace AllieJoe.MapGeneration
         [SerializeField]
         private WaveCollapseRender _render;
 
+        [Space(20)]
+        [SerializeField]
+        [Range(0.1f, 1)]
+        private float _speed = 0.15f;
+
         private List<Tile> _tiles;
         private WaveCell[] _cells;
         private Stack<WaveCell> _propagateStackCell;
+        private WaveState _state;
         
         private WaveCell GetCell(int x, int y) => _cells[x * Size + y];
         
         [Button]
         private void Init()
         {
+            //Animation - quick handler
+            StopAllCoroutines();
+            
             SetTiles();
             CreateCells();
 
@@ -37,6 +47,23 @@ namespace AllieJoe.MapGeneration
         }
 
         [Button]
+        private void RunAnimation()
+        {
+            //Animation - quick handler
+            StopAllCoroutines();
+            StartCoroutine(RunAnimator());
+        }
+
+        private IEnumerator RunAnimator()
+        {
+            _state = WaveState.Pending;
+            while (_state == WaveState.Pending)
+            {
+                Step();
+                yield return new WaitForSeconds(_speed);
+            }
+        }
+        
         private void Step()
         {
             Run();
@@ -77,14 +104,14 @@ namespace AllieJoe.MapGeneration
         
         private void Run()
         {
-            WaveState state = AllCollapsedOrInvalid();
-            if (state == WaveState.Completed)
+            _state = AllCollapsedOrInvalid();
+            if (_state == WaveState.Completed)
             {
                 Debug.Log("[WaveCollapseSolver] Completed!");
                 return;
             }
             
-            if (state == WaveState.Invalid)
+            if (_state == WaveState.Invalid)
             {
                 Debug.Log("[WaveCollapseSolver] Invalid!");
                 return;
