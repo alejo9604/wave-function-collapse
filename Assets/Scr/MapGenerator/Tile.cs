@@ -44,8 +44,6 @@ namespace AllieJoe.MapGeneration
             
             foreach (Tile t in tiles)
             {
-                if(t.id == id) continue;
-                
                 if(edges[EDGE_UP] == t.edges[EDGE_DOWN])
                     validTilesUp.Add(t.id);
                 

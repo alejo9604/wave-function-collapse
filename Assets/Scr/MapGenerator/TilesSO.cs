@@ -14,7 +14,8 @@ namespace AllieJoe.MapGeneration
     [CreateAssetMenu(menuName = "Wave/Tile", fileName = "Wave Tile")]
     public class TilesSO : ScriptableObject
     {
-        [TableList(AlwaysExpanded = true, DrawScrollView = true, ShowIndexLabels = true)]
+        public Vector2 Spacing;
+        [TableList(DrawScrollView = true, ShowIndexLabels = true)]
         public List<TileData> Tiles;
 
         private string folderPath;

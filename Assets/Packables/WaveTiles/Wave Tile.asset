@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83db58e7759593649b58e62dea251c1a, type: 3}
   m_Name: Wave Tile
   m_EditorClassIdentifier: 
+  Spacing: {x: 0.14, y: 0.14}
   Tiles:
   - Sprite: {fileID: 21300000, guid: ae1114903c3327f48b205a7b879f11db, type: 3}
     name: bridge
@@ -31,6 +32,7 @@ MonoBehaviour:
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
     - {r: 0.62352943, g: 0.62352943, b: 0.62352943, a: 1}
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
+    Ignore: 0
   - Sprite: {fileID: 21300000, guid: 60107d6de7f1c4540a0a9256b6f8137d, type: 3}
     name: component
     Up:
@@ -49,6 +51,7 @@ MonoBehaviour:
     - {r: 0.20784315, g: 0.20784315, b: 0.20784315, a: 1}
     - {r: 0.20784315, g: 0.20784315, b: 0.20784315, a: 1}
     - {r: 0.20784315, g: 0.20784315, b: 0.20784315, a: 1}
+    Ignore: 0
   - Sprite: {fileID: 21300000, guid: 44deea97541f88f49b26b25561deb8c9, type: 3}
     name: connection
     Up:
@@ -67,6 +70,7 @@ MonoBehaviour:
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
     - {r: 0.20784315, g: 0.20784315, b: 0.20784315, a: 1}
+    Ignore: 0
   - Sprite: {fileID: 21300000, guid: 0e76b5adf52948742afb8e6cdf5fdf6a, type: 3}
     name: corner
     Up:
@@ -85,6 +89,7 @@ MonoBehaviour:
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
+    Ignore: 1
   - Sprite: {fileID: 21300000, guid: d07364cb43a3178409f62a9150747154, type: 3}
     name: dskew
     Up:
@@ -103,6 +108,7 @@ MonoBehaviour:
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
     - {r: 0, g: 0.81568635, b: 0.4784314, a: 1}
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
+    Ignore: 0
   - Sprite: {fileID: 21300000, guid: 13c7a044a49aa56439936df8bdf48ec7, type: 3}
     name: skew
     Up:
@@ -121,6 +127,7 @@ MonoBehaviour:
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
     - {r: 0, g: 0.81568635, b: 0.4784314, a: 1}
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
+    Ignore: 0
   - Sprite: {fileID: 21300000, guid: 6b115e1ef2ec3634ab4b70af87cbbc21, type: 3}
     name: substrate
     Up:
@@ -139,6 +146,7 @@ MonoBehaviour:
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
+    Ignore: 0
   - Sprite: {fileID: 21300000, guid: 2a3b2f1f1421de442966c5d62dfb41de, type: 3}
     name: t
     Up:
@@ -157,6 +165,7 @@ MonoBehaviour:
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
     - {r: 0, g: 0.81568635, b: 0.4784314, a: 1}
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
+    Ignore: 0
   - Sprite: {fileID: 21300000, guid: 252e37a9100befb44a2cc6bf1e824681, type: 3}
     name: track
     Up:
@@ -175,6 +184,7 @@ MonoBehaviour:
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
+    Ignore: 0
   - Sprite: {fileID: 21300000, guid: 6c7debf6b2836f2408d5d2ea90c88700, type: 3}
     name: transition
     Up:
@@ -193,6 +203,7 @@ MonoBehaviour:
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
+    Ignore: 1
   - Sprite: {fileID: 21300000, guid: 94eed30f27563ad4fa019757dd81b3f6, type: 3}
     name: turn
     Up:
@@ -211,6 +222,7 @@ MonoBehaviour:
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
     - {r: 0, g: 0.81568635, b: 0.4784314, a: 1}
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
+    Ignore: 0
   - Sprite: {fileID: 21300000, guid: 2b07fe7264c55d643bbb1b0fa0e7ce4e, type: 3}
     name: viad
     Up:
@@ -229,6 +241,7 @@ MonoBehaviour:
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
     - {r: 0, g: 0.81568635, b: 0.4784314, a: 1}
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
+    Ignore: 0
   - Sprite: {fileID: 21300000, guid: f5a7e5ef8de68c149b3c66a96eeea891, type: 3}
     name: vias
     Up:
@@ -247,6 +260,7 @@ MonoBehaviour:
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
+    Ignore: 0
   - Sprite: {fileID: 21300000, guid: 0c516aa96538a39498f113af30384d43, type: 3}
     name: wire
     Up:
@@ -265,3 +279,4 @@ MonoBehaviour:
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
     - {r: 0.62352943, g: 0.62352943, b: 0.62352943, a: 1}
     - {r: 0.019607844, g: 0.41176474, b: 0.039215688, a: 1}
+    Ignore: 0

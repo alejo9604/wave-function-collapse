@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace AllieJoe.MapGeneration
 {
-    public class Cell
+    public class WaveCell
     {
         public int X { get; private set; }
         public int Y { get; private set; }
@@ -11,16 +12,13 @@ namespace AllieJoe.MapGeneration
         public List<int> Options { get; private set; }
         public int Value { get; private set; } = -1;
 
-        public int Entropy => Options.Count;
+        public int Entropy { get; private set; } = int.MaxValue;
 
-        public Cell(int x, int y, int options)
+        public WaveCell(int x, int y, int[] options)
         {
             X = x;
             Y = y;
-            for (int i = 0; i < options; i++)
-            {
-                Options.Add(i);
-            }
+            Options = new List<int>(options);
             Value = -1;
             Check();
         }
@@ -31,14 +29,22 @@ namespace AllieJoe.MapGeneration
                 return false;
 
             Value = Options[Random.Range(0, Options.Count)];
-            Collapsed = true;
             Options.Clear();
+            Check();
             return true;
         }
+        
 
-        public void Check()
+        public void UpdateValidOptions(List<int> valid)
         {
-            Collapsed = Options.Count == 0;
+            Options = Options.Where(x => valid.Any(y => y == x)).ToList();
+            Check();
+        }
+        
+        private void Check()
+        {
+            Entropy = Options.Count;
+            Collapsed = Entropy == 0;
         }
     }
 }
