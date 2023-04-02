@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using AllieJoe.Util;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using Random = System.Random;
@@ -40,6 +42,7 @@ namespace AllieJoe.MapGeneration
         
         private WaveCell GetCell(int x, int y) => _cells[x * Size + y];
         
+
         [Button]
         private void Init()
         {
@@ -50,6 +53,8 @@ namespace AllieJoe.MapGeneration
                 _seed = UnityEngine.Random.Range(0, int.MaxValue);
             _random = new Random(_seed);
 
+            IDMapperGenerator.Reset();
+            
             SetTiles();
             CreateCells();
 
@@ -94,10 +99,6 @@ namespace AllieJoe.MapGeneration
         
         private void SetTiles()
         {
-            //TODO: Don't really like having this here. Move it to a proper class
-            TileData.id = 0;
-            TileData.EdgesMap.Clear();
-            
             _tiles = new List<Tile>();
             _tilesDic = new Dictionary<int, Tile>();
             List<TileData> tileData = _tileData.Tiles;

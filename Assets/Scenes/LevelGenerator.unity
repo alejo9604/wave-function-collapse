@@ -271,5 +271,5 @@ MonoBehaviour:
   Size: 5
   _render: {fileID: 2076305774}
   _speed: 0.2
-  _randomSeed: 0
+  _randomSeed: 1
   _seed: 33

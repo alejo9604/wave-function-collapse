@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using AllieJoe.Util;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -80,29 +81,11 @@ namespace AllieJoe.MapGeneration
         public Color[] Right = new Color[3];
 
         public bool Ignore = false;
-
-        //TOD: Move this to a proper place
-        public static int id;
-        public static Dictionary<string, string> EdgesMap = new Dictionary<string, string>(); 
         
         public static string ToEdgeRestriction(Color[] restriction)
         {
-            string result = "";
-            for (int i = 0; i < restriction.Length; i++)
-            {
-                string colorString = ColorUtility.ToHtmlStringRGB(restriction[i]);
-                if (!EdgesMap.ContainsKey(colorString))
-                {
-                    id++;
-                    EdgesMap.Add(colorString, id.ToString());
-                }
-
-                result += EdgesMap[colorString];
-
-            }
-
-            return result;
-            //return restriction.Aggregate("", (s, color) => $"{s}{ColorUtility.ToHtmlStringRGB(color)}");
+            return restriction.Aggregate("", (s, color) => 
+                $"{s}{IDMapperGenerator.MapValueToIncrementalID(ColorUtility.ToHtmlStringRGB(color))}");
         } 
     }
 }
