@@ -97,6 +97,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34998750817dade44a390f25dfa68943, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  total: 12
-  size: 0.14
-  rowAmount: 4
+  _maxOptionsPerRow: 7

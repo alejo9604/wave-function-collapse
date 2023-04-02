@@ -9,12 +9,12 @@ namespace AllieJoe.MapGeneration
     public class Tile
     {
         public const int EDGE_UP = 0;
-        public const int EDGE_DOWN = 1;
-        public const int EDGE_LEFT = 2;
-        public const int EDGE_RIGHT = 3;
+        public const int EDGE_RIGHT = 1;
+        public const int EDGE_DOWN = 2;
+        public const int EDGE_LEFT = 3;
         
-        public int id;
         public string name;
+        public int id;
         public Sprite sprite;
         public float rotation;
         public string[] edges;
@@ -86,9 +86,8 @@ namespace AllieJoe.MapGeneration
             {
                 rotatedEdges[i] = edges[(i - num + len) % len];
             }
-
-            //TODO: This doesn't work. We need to reverse the internal chunk of value:
-            // 'ABC XYZ FGJ' -> 'FGJ XYZ ABC' instead of 'JGF ZYX CBA' 
+            
+            // 'ABC XYZ FGJ' -> 'FGJ XYZ ABC'
             if (num == 1 || num == 2)
             {
                 rotatedEdges[EDGE_UP] = ReverseEdgeValue(rotatedEdges[EDGE_UP]);
@@ -104,9 +103,10 @@ namespace AllieJoe.MapGeneration
             return rotatedEdges;
         }
 
-        private string ReverseEdgeValue(string edgeValue)
+        private string ReverseEdgeValue(string edgeValue, int num = 3)
         {
-            string[] values = Enumerable.Range(0, 3).Select(i => edgeValue.Substring(i * 6, 6)).ToArray();
+            int charCount = edgeValue.Length / num;
+            string[] values = Enumerable.Range(0, num).Select(i => edgeValue.Substring(i * charCount, charCount)).ToArray();
             Array.Reverse(values);
             return string.Join("", values);
         }
@@ -118,9 +118,9 @@ namespace AllieJoe.MapGeneration
             rotation = 0;
             edges = new string[4];
             edges[EDGE_UP] = TileData.ToEdgeRestriction(tileData.Up);
+            edges[EDGE_RIGHT] = TileData.ToEdgeRestriction(tileData.Right);
             edges[EDGE_DOWN] = TileData.ToEdgeRestriction(tileData.Down);
             edges[EDGE_LEFT] = TileData.ToEdgeRestriction(tileData.Left);
-            edges[EDGE_RIGHT] = TileData.ToEdgeRestriction(tileData.Right);
         }
     }
 }

@@ -61,6 +61,7 @@ namespace AllieJoe.MapGeneration
     [Serializable]
     public class TileData
     {
+        
         [TableColumnWidth(57, Resizable = false)] [PreviewField(Alignment = ObjectFieldAlignment.Center)]
         public Sprite Sprite;
 
@@ -80,9 +81,28 @@ namespace AllieJoe.MapGeneration
 
         public bool Ignore = false;
 
+        //TOD: Move this to a proper place
+        public static int id;
+        public static Dictionary<string, string> EdgesMap = new Dictionary<string, string>(); 
+        
         public static string ToEdgeRestriction(Color[] restriction)
         {
-            return restriction.Aggregate("", (s, color) => $"{s}#{ColorUtility.ToHtmlStringRGB(color)}").Replace("#", "");
+            string result = "";
+            for (int i = 0; i < restriction.Length; i++)
+            {
+                string colorString = ColorUtility.ToHtmlStringRGB(restriction[i]);
+                if (!EdgesMap.ContainsKey(colorString))
+                {
+                    id++;
+                    EdgesMap.Add(colorString, id.ToString());
+                }
+
+                result += EdgesMap[colorString];
+
+            }
+
+            return result;
+            //return restriction.Aggregate("", (s, color) => $"{s}{ColorUtility.ToHtmlStringRGB(color)}");
         } 
     }
 }

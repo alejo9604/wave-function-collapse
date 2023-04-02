@@ -22,7 +22,7 @@ namespace AllieJoe.MapGeneration
 
         [Space(20)]
         [SerializeField]
-        [Range(0.1f, 1)]
+        [Range(0f, 1)]
         private float _speed = 0.15f;
 
         private List<Tile> _tiles;
@@ -45,7 +45,7 @@ namespace AllieJoe.MapGeneration
             _propagateStackCell = new Stack<WaveCell>();
 
             TileRenderData[] tileRenderData = _tiles.Select(x => new TileRenderData {id = x.id, Sprite = x.sprite, rotation = x.rotation}).ToArray();
-            _render.CreateGrid(_cells, tileRenderData, _tileData.Spacing);
+            _render.CreateGrid(Size, _cells, tileRenderData, _tileData.Spacing);
         }
 
         [Button]
@@ -83,6 +83,10 @@ namespace AllieJoe.MapGeneration
         
         private void SetTiles()
         {
+            //TODO: Don't really like having this here. Move it to a proper class
+            TileData.id = 0;
+            TileData.EdgesMap.Clear();
+            
             _tiles = new List<Tile>();
             _tilesDic = new Dictionary<int, Tile>();
             List<TileData> tileData = _tileData.Tiles;

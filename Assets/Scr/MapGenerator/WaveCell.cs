@@ -38,7 +38,17 @@ namespace AllieJoe.MapGeneration
         public void UpdateValidOptions(List<int> valid)
         {
             Options = Options.Where(x => valid.Any(y => y == x)).ToList();
+            TryForceCollapse();
             Check();
+        }
+
+        private void TryForceCollapse()
+        {
+            if (Options.Count != 1)
+                return;
+            
+            Value = Options[0];
+            Options.Clear();
         }
         
         private void Check()
