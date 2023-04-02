@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using Random = System.Random;
 
 namespace AllieJoe.MapGeneration
 {
@@ -24,10 +25,16 @@ namespace AllieJoe.MapGeneration
         [SerializeField]
         [Range(0f, 1)]
         private float _speed = 0.15f;
+        [SerializeField]
+        private bool _randomSeed;
+        [SerializeField]
+        private int _seed;
 
         private List<Tile> _tiles;
         private Dictionary<int, Tile> _tilesDic;
         private WaveCell[] _cells;
+
+        private Random _random;
         private Stack<WaveCell> _propagateStackCell;
         private WaveState _state;
         
@@ -38,7 +45,11 @@ namespace AllieJoe.MapGeneration
         {
             //Animation - quick handler
             StopAllCoroutines();
-            
+
+            if (_randomSeed)
+                _seed = UnityEngine.Random.Range(0, int.MaxValue);
+            _random = new Random(_seed);
+
             SetTiles();
             CreateCells();
 
@@ -140,7 +151,7 @@ namespace AllieJoe.MapGeneration
             {
                 for (int j = 0; j < Size; j++)
                 {
-                    _cells[i * Size + j] = new WaveCell(i, j, optionsID);
+                    _cells[i * Size + j] = new WaveCell(i, j, optionsID, _random);
                 }
             }
         }
@@ -209,7 +220,7 @@ namespace AllieJoe.MapGeneration
                 }
             }
 
-            return waveCellIndex[Random.Range(0, waveCellIndex.Count)];
+            return waveCellIndex[_random.Next(0, waveCellIndex.Count)];
         }
 
         private void PropagateCollapsed(WaveCell collapsedCell)

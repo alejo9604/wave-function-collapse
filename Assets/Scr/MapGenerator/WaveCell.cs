@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
+using Random = System.Random;
 
 namespace AllieJoe.MapGeneration
 {
@@ -11,16 +11,19 @@ namespace AllieJoe.MapGeneration
         public bool Collapsed { get; private set; }
         public List<int> Options { get; private set; }
         public int Value { get; private set; } = -1;
-
         public int Entropy { get; private set; } = int.MaxValue;
 
-        public WaveCell(int x, int y, int[] options)
+        private Random _random;
+
+        public WaveCell(int x, int y, int[] options, Random random = null)
         {
             X = x;
             Y = y;
             Options = new List<int>(options);
             Value = -1;
             Check();
+
+            _random = random ?? new Random();
         }
         
         public bool Collapse()
@@ -28,7 +31,7 @@ namespace AllieJoe.MapGeneration
             if (Options.Count == 0)
                 return false;
 
-            Value = Options[Random.Range(0, Options.Count)];
+            Value = Options[_random.Next(0, Options.Count)];
             Options.Clear();
             Check();
             return true;
