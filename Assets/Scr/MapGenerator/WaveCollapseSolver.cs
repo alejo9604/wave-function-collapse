@@ -44,7 +44,7 @@ namespace AllieJoe.MapGeneration
 
             _propagateStackCell = new Stack<WaveCell>();
 
-            TileRenderData[] tileRenderData = _tiles.Select(x => new TileRenderData {id = x.id, Sprite = x.sprite}).ToArray();
+            TileRenderData[] tileRenderData = _tiles.Select(x => new TileRenderData {id = x.id, Sprite = x.sprite, rotation = x.rotation}).ToArray();
             _render.CreateGrid(_cells, tileRenderData, _tileData.Spacing);
         }
 
@@ -55,6 +55,15 @@ namespace AllieJoe.MapGeneration
             StopAllCoroutines();
             StartCoroutine(RunAnimator());
         }
+        
+        [Button]
+        private void SingleStep()
+        {
+            //Animation - quick handler
+            StopAllCoroutines();
+            Step();
+        }
+
 
         private IEnumerator RunAnimator()
         {
@@ -86,6 +95,31 @@ namespace AllieJoe.MapGeneration
                 _tiles.Add(tile);
                 _tilesDic.Add(i, tile);
             }
+
+
+            int sourceTileCount = _tiles.Count;
+            int id = _tiles[^1].id + 1;
+            for (int i = 0; i < sourceTileCount; i++)
+            {
+                Tile tileToRotate = _tiles[i];
+                List<string> prevRotations = new List<string>(4);
+                prevRotations.Add(string.Join("", tileToRotate.edges));
+                for (int j = 1; j < 4; j++)
+                {
+                    string[] rotatedTiles = _tiles[i].RotateEdges(j);
+                    string directValue = string.Join("", rotatedTiles);
+                    if (!prevRotations.Contains(directValue))
+                    {
+                        prevRotations.Add(directValue);
+                        Tile tile = new Tile(id, tileToRotate.name, tileToRotate.sprite, rotatedTiles, 90 * j);
+                        _tiles.Add(tile);
+                        _tilesDic.Add(id, tile);
+
+                        id++;
+                    }
+                }
+            }
+            
             
             for (int i = 0; i < _tiles.Count; i++)
             {

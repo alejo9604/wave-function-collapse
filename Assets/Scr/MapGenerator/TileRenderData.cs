@@ -6,5 +6,6 @@ namespace AllieJoe.MapGeneration
     {
         public int id;
         public Sprite Sprite;
+        public float rotation;
     }
 }

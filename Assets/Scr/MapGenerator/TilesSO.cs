@@ -66,23 +66,23 @@ namespace AllieJoe.MapGeneration
 
         [HideInInspector] public string name;
 
-        [VerticalGroup("Constrains")] [ColorPalette("WaveRestrictions")]
+        [VerticalGroup("Constrains")] //[ColorPalette("WaveRestrictions")]
         public Color[] Up = new Color[3];
 
-        [VerticalGroup("Constrains")] [ColorPalette("WaveRestrictions")]
+        [VerticalGroup("Constrains")] //[ColorPalette("WaveRestrictions")]
         public Color[] Down = new Color[3];
 
-        [VerticalGroup("Constrains")] [ColorPalette("WaveRestrictions")]
+        [VerticalGroup("Constrains")] //[ColorPalette("WaveRestrictions")]
         public Color[] Left = new Color[3];
 
-        [VerticalGroup("Constrains")] [ColorPalette("WaveRestrictions")]
+        [VerticalGroup("Constrains")] //[ColorPalette("WaveRestrictions")]
         public Color[] Right = new Color[3];
 
         public bool Ignore = false;
 
         public static string ToEdgeRestriction(Color[] restriction)
         {
-            return restriction.Aggregate("", (s, color) => $"{s}#{ColorUtility.ToHtmlStringRGB(color)}");
+            return restriction.Aggregate("", (s, color) => $"{s}#{ColorUtility.ToHtmlStringRGB(color)}").Replace("#", "");
         } 
     }
 }

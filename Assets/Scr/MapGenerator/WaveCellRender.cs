@@ -11,7 +11,7 @@ namespace AllieJoe.MapGeneration
         private int _maxOptionsPerRow = 4;
         
         private SpriteRenderer _renderer;
-        private List<SpriteRenderer> _options = new List<SpriteRenderer>();
+        private Dictionary<int, SpriteRenderer> _options = new Dictionary<int, SpriteRenderer>();
         private WaveCollapseTileProvider _tileProvider;
         
 
@@ -43,6 +43,10 @@ namespace AllieJoe.MapGeneration
             int totalTiles = _tileProvider.TotalTiles;
             for (int i = 0; i < totalTiles; i++)
             {
+                TileRenderData tileData = _tileProvider.GetTileRenderByIndex(i);
+                if(tileData.rotation > 0)
+                    continue;
+                
                 int xSpace = i % _maxOptionsPerRow;
                 if (i > 0 && xSpace == 0)
                     currentY++;
@@ -54,8 +58,8 @@ namespace AllieJoe.MapGeneration
                 c.transform.localScale = Vector3.one * innerSize;
                 SpriteRenderer s = c.AddComponent<SpriteRenderer>();
                 s.sortingOrder = 1;
-                s.sprite = _tileProvider.GetTileRenderByIndex(i).Sprite;
-                _options.Add(s);
+                s.sprite = tileData.Sprite;
+                _options.Add(tileData.id, s);
             }
         }
         
@@ -69,8 +73,10 @@ namespace AllieJoe.MapGeneration
 
         private void RenderCollapsed(WaveCell cell)
         {
-            _renderer.sprite = cell.Value >= 0 ? _tileProvider.GetTileRenderById(cell.Value).Sprite : null;
-            foreach (var o in _options)
+            TileRenderData tileRenderData = cell.Value >= 0 ? _tileProvider.GetTileRenderById(cell.Value) : null;
+            _renderer.sprite = tileRenderData?.Sprite;
+            _renderer.transform.localEulerAngles = new Vector3(0f, 0f, tileRenderData?.rotation ?? 0);
+            foreach (var o in _options.Values)
             {
                 o.gameObject.SetActive(false);
             }
@@ -79,11 +85,10 @@ namespace AllieJoe.MapGeneration
         private void RenderNoCollapsed(WaveCell cell)
         {
             _renderer.sprite = null;
-            int totalTiles = _tileProvider.TotalTiles;
-            for (int i = 0; i < totalTiles; i++)
+            _renderer.transform.localEulerAngles = Vector3.zero;
+            foreach (int id in _options.Keys)
             {
-                bool active = cell.Options.Contains(_tileProvider.GetTileRenderByIndex(i).id);
-                _options[i].gameObject.SetActive(active);
+                _options[id].gameObject.SetActive(cell.Options.Contains(id));
             }
         }
     }
