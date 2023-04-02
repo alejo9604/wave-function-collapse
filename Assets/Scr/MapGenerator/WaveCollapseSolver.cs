@@ -6,9 +6,10 @@ using UnityEngine;
 
 namespace AllieJoe.MapGeneration
 {
+    public enum LookUpDirection {UP, DOWN, LEFT, RIGHT }
+    
     public class WaveCollapseSolver : MonoBehaviour
     {
-        enum LookUpDirection {UP, DOWN, LEFT, RIGHT }
         enum WaveState {Completed, Invalid, Pending}
         
         [SerializeField]
@@ -25,6 +26,7 @@ namespace AllieJoe.MapGeneration
         private float _speed = 0.15f;
 
         private List<Tile> _tiles;
+        private Dictionary<int, Tile> _tilesDic;
         private WaveCell[] _cells;
         private Stack<WaveCell> _propagateStackCell;
         private WaveState _state;
@@ -73,13 +75,16 @@ namespace AllieJoe.MapGeneration
         private void SetTiles()
         {
             _tiles = new List<Tile>();
+            _tilesDic = new Dictionary<int, Tile>();
             List<TileData> tileData = _tileData.Tiles;
             for (int i = 0; i < tileData.Count; i++)
             {
                 if(tileData[i].Ignore)
                     continue;
-                
-                _tiles.Add(new Tile(i, tileData[i]));
+
+                Tile tile = new Tile(i, tileData[i]);
+                _tiles.Add(tile);
+                _tilesDic.Add(i, tile);
             }
             
             for (int i = 0; i < _tiles.Count; i++)
@@ -192,25 +197,42 @@ namespace AllieJoe.MapGeneration
         {
             int x = cell.X;
             int y = cell.Y;
-
-            Tile selectedTile = _tiles.FirstOrDefault(tile => tile.id == cell.Value);
             
             switch (direction)
             {
                 case LookUpDirection.UP:
-                    TryUpdateCellOptions(x, y - 1, selectedTile.validTilesUp);
+                    TryUpdateCellOptions(x, y - 1, GetValidOptions(cell, direction));
                     break;
                 case LookUpDirection.DOWN:
-                    TryUpdateCellOptions(x, y + 1, selectedTile.validTilesDown);
+                    TryUpdateCellOptions(x, y + 1, GetValidOptions(cell, direction));
                     break;
                 case LookUpDirection.LEFT:
-                    TryUpdateCellOptions(x - 1, y, selectedTile.validTilesLeft);
+                    TryUpdateCellOptions(x - 1, y, GetValidOptions(cell, direction));
                     break;
                 case LookUpDirection.RIGHT:
-                    TryUpdateCellOptions(x + 1, y, selectedTile.validTilesRight);
+                    TryUpdateCellOptions(x + 1, y, GetValidOptions(cell, direction));
                     break;
                 
             }
+        }
+
+        private List<int> GetValidOptions(WaveCell cell, LookUpDirection direction)
+        {
+            //If collapsed get the Tile selected
+            if (cell.Value >= 0)
+            {
+                return _tilesDic[cell.Value].GetValidTilesByDirection(direction);
+            }
+            
+            //No collapsed: use all options.
+            List<int> validOptions = new List<int>();
+            for (int i = 0; i < cell.Options.Count; i++)
+            {
+                Tile tile = _tilesDic[cell.Options[i]];
+                validOptions.AddRange(tile.GetValidTilesByDirection(direction));
+            }
+
+            return validOptions;
         }
 
         private void TryUpdateCellOptions(int x, int y, List<int> valid)
@@ -226,10 +248,10 @@ namespace AllieJoe.MapGeneration
             int prevEntropy = cell.Entropy;
             cell.UpdateValidOptions(valid);
 
-            // if (prevEntropy != cell.Entropy)
-            // {
-            //     _propagateStackCell.Push(cell);
-            // }
+            if (prevEntropy != cell.Entropy)
+            {
+                _propagateStackCell.Push(cell);
+            }
         }
     }
 }

@@ -57,6 +57,23 @@ namespace AllieJoe.MapGeneration
                     validTilesRight.Add(t.id);
             }
         }
+
+        public List<int> GetValidTilesByDirection(LookUpDirection direction)
+        {
+            switch (direction)
+            {
+                case LookUpDirection.UP:
+                    return validTilesUp;
+                case LookUpDirection.DOWN:
+                    return validTilesDown;
+                case LookUpDirection.LEFT:
+                    return validTilesLeft;
+                case LookUpDirection.RIGHT:
+                    return validTilesRight;
+            }
+
+            return null;
+        }
         
         private void Bind(TileData tileData)
         {
