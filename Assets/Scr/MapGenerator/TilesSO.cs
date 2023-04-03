@@ -68,18 +68,19 @@ namespace AllieJoe.MapGeneration
 
         [HideInInspector] public string name;
 
-        [VerticalGroup("Constrains")] //[ColorPalette("WaveRestrictions")]
-        public Color[] Up = new Color[3];
+        [VerticalGroup("Constrains")] 
+        public Color[] Up = new[] {Color.black};
 
-        [VerticalGroup("Constrains")] //[ColorPalette("WaveRestrictions")]
-        public Color[] Down = new Color[3];
+        [VerticalGroup("Constrains")] 
+        public Color[] Down = new[] {Color.black};
 
-        [VerticalGroup("Constrains")] //[ColorPalette("WaveRestrictions")]
-        public Color[] Left = new Color[3];
+        [VerticalGroup("Constrains")] 
+        public Color[] Left = new[] {Color.black};
 
-        [VerticalGroup("Constrains")] //[ColorPalette("WaveRestrictions")]
-        public Color[] Right = new Color[3];
+        [VerticalGroup("Constrains")] 
+        public Color[] Right = new[] {Color.black};
 
+        [TableColumnWidth(50, Resizable = false)]
         public bool Ignore = false;
         
         public static string ToEdgeRestriction(Color[] restriction)
