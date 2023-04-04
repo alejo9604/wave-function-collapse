@@ -39,6 +39,7 @@ namespace AllieJoe.MapGeneration
         private Random _random;
         private Stack<WaveCell> _propagateStackCell;
         private WaveState _state;
+        private bool _firstStep = true;
         
         private WaveCell GetCell(int x, int y) => _cells[x * Size + y];
         
@@ -95,6 +96,8 @@ namespace AllieJoe.MapGeneration
         {
             Run();
             _render.RenderGrid(_cells);
+
+            _firstStep = false;
         }
         
         private void SetTiles()
@@ -199,6 +202,11 @@ namespace AllieJoe.MapGeneration
 
         private int GetLowestEntropyIndex()
         {
+            if (_firstStep)
+            {
+                return _random.Next(0, _cells.Length);
+            }
+            
             int minEntropy = int.MaxValue;
             List<int> waveCellIndex = new List<int>();
             for (int i = 0; i < _cells.Length; i++)
