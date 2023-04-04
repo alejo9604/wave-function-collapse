@@ -68,6 +68,7 @@ namespace AllieJoe.MapGeneration.Tool
         {
             SetTileConstrains();
             _selectedSprite = (_selectedSprite - 1) % _sprites.Count;
+            if (_selectedSprite < 0) _selectedSprite = _sprites.Count - 1;
             RenderSelectedSprite();
         }
 
